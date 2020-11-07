@@ -206,6 +206,23 @@ class TrackCompileTest {
 		assertThrows(RuntimeException.class, () -> t.compile());
 	}
 	
+	@Test
+	void testTappanTrack() {
+		A_Segment sJ1 = new SegmentStraight("sJ", new Coordinates(-10, 5), new Coordinates(15, 5));
+		A_Segment sK1 = new SegmentStraight("sK", new Coordinates(15, 17), new Coordinates(15, 5));
+		A_Segment sL1 = new SegmentStraight("sL", new Coordinates(2, -9), new Coordinates(15, 17));
+		A_Segment sM1 = new SegmentStraight("sM", new Coordinates(2, -9), new Coordinates(-10, 5));
+		
+		t.addSegments(sJ1, sK1, sL1, sM1);
+		
+		t.compile();
+		
+		checkJoin(sJ1, sM1, false, sK1, false);
+		checkJoin(sK1, sL1, false, sJ1, false);
+		checkJoin(sL1, sM1, true, sK1, true);
+		checkJoin(sM1, sL1, true, sJ1, true);
+	}
+	
 	private void checkJoin(A_Segment s, A_Segment tipCSeg, boolean tipCPointsToCorD, A_Segment tipDSeg, boolean tipDPointsToCorD) {
 		assertEquals(tipCSeg.getID(), s.getTipCJoin().getTargetSegment().getID(), "Wrong segment: Tip c on segment " + s.getID());
 		assertEquals(tipDSeg.getID(), s.getTipDJoin().getTargetSegment().getID(), "Wrong segment: Tip d on segment " + s.getID());
